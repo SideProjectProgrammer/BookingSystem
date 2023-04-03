@@ -49,29 +49,8 @@ calendar_service = build('calendar', 'v3', credentials=creds)
 
 @app.route('/')
 def list_todays_events():
-    # 設定當天的時間範圍
-    today_start = datetime.combine(datetime.today(), time.min).isoformat()
-    today_end = datetime.combine(datetime.today(), time.max).isoformat()
-    print('today_start:', today_start)
-    print('today_end:', today_end)
+    return 'Hello, World!'
 
-    # 使用 Calendar API 取得當天的預約
-    try:
-        events_result = calendar_service.events().list(calendarId=CALENDAR_ID, timeMin=today_start, timeMax=today_end, singleEvents=True, orderBy='startTime').execute()
-        events = events_result.get('items', [])
-    except HttpError as error:
-        print('Google Calendar API error:', error)
-        return jsonify({'error': 'Google Calendar API error: %s' % error}), 500
-
-    # 回傳預約資訊
-    event_list = []
-    for event in events:
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        start_time = datetime.fromisoformat(start).strftime('%H:%M')
-        event_list.append({'title': event['summary'], 'start_time': start_time})
-
-    print('event_list:', event_list) # 印出event_list的值
-    return jsonify({'events': event_list})
 
 if __name__ == '__main__':
     app.run()
