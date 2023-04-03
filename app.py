@@ -43,6 +43,7 @@ def list_todays_events():
         events_result = calendar_service.events().list(calendarId=CALENDAR_ID, timeMin=today_start, timeMax=today_end, singleEvents=True, orderBy='startTime').execute()
         events = events_result.get('items', [])
     except HttpError as error:
+        print('Google Calendar API error:', error)
         return jsonify({'error': 'Google Calendar API error: %s' % error}), 500
 
     # 回傳預約資訊
@@ -52,6 +53,7 @@ def list_todays_events():
         start_time = datetime.fromisoformat(start).strftime('%H:%M')
         event_list.append({'title': event['summary'], 'start_time': start_time})
 
+    print('event_list:', event_list) # 印出event_list的值
     return jsonify({'events': event_list})
 
 if __name__ == '__main__':
