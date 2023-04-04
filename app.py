@@ -49,8 +49,9 @@ calendar_service = build('calendar', 'v3', credentials=creds)
 def list_todays_events():
 ##    return 'Hello, World!'
     # 設定當天的時間範圍
-    today_start = datetime.combine(datetime.today(), time.min).isoformat()
-    today_end = (datetime.combine(datetime.today(), time.max) + timedelta(seconds=1)).replace(microsecond=0).isoformat()
+    now = datetime.utcnow()
+    today_start = datetime(now.year, now.month, now.day, 0, 0, 0).isoformat() + 'Z'
+    today_end = datetime(now.year, now.month, now.day, 23, 59, 59).isoformat() + 'Z'
 
     print('today_start:', today_start)
     print('today_end:', today_end)
