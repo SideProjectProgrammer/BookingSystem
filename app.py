@@ -64,6 +64,10 @@ def list_todays_events():
     today_start = datetime(now.year, now.month, now.day, 0, 0, 0, tzinfo=TARGET_TIMEZONE).isoformat()
     today_end = datetime(now.year, now.month, now.day, 23, 59, 59, tzinfo=TARGET_TIMEZONE).isoformat()
 
+    # 將日期轉成iso格式
+    today_start = now.date().isoformat() + 'T00:00:00+08:00'
+    today_end = now.date().isoformat() + 'T23:59:59+08:00'
+
     print('today_start:', today_start)
     print('today_end:', today_end)
 
