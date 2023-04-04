@@ -14,20 +14,17 @@ SERVICE_ACCOUNT_KEY = os.environ['SERVICE_ACCOUNT_KEY'].replace('\\n', '\n')
 CALENDAR_ID = os.environ['CALENDAR_ID']
 TIMEZONE = os.environ['TIMEZONE']
 
-print('CALENDAR_ID:', os.environ['CALENDAR_ID'])
-print('TIMEZONE:', os.environ['TIMEZONE'])
-
-print('SERVICE_ACCOUNT_EMAIL:', os.environ['SERVICE_ACCOUNT_EMAIL'])
-print('SERVICE_ACCOUNT_KEY:', os.environ['SERVICE_ACCOUNT_KEY'])
-print('CALENDAR_ID:', os.environ['CALENDAR_ID'])
-print('TIMEZONE:', os.environ['TIMEZONE'])
-print('PROJECT_ID:', os.environ['PROJECT_ID'])
-print('PRIVATE_KEY_ID:', os.environ['PRIVATE_KEY_ID'])
-print('CLIENT_ID:', os.environ['CLIENT_ID'])
-print('AUTH_URI:', os.environ['AUTH_URI'])
-print('TOKEN_URI:', os.environ['TOKEN_URI'])
-print('AUTH_PROVIDER_X509_CERT_URL:', os.environ['AUTH_PROVIDER_X509_CERT_URL'])
-print('CLIENT_X509_CERT_URL:', os.environ['CLIENT_X509_CERT_URL'])
+##print('SERVICE_ACCOUNT_EMAIL:', os.environ['SERVICE_ACCOUNT_EMAIL'])
+##print('SERVICE_ACCOUNT_KEY:', os.environ['SERVICE_ACCOUNT_KEY'])
+##print('CALENDAR_ID:', os.environ['CALENDAR_ID'])
+##print('TIMEZONE:', os.environ['TIMEZONE'])
+##print('PROJECT_ID:', os.environ['PROJECT_ID'])
+##print('PRIVATE_KEY_ID:', os.environ['PRIVATE_KEY_ID'])
+##print('CLIENT_ID:', os.environ['CLIENT_ID'])
+##print('AUTH_URI:', os.environ['AUTH_URI'])
+##print('TOKEN_URI:', os.environ['TOKEN_URI'])
+##print('AUTH_PROVIDER_X509_CERT_URL:', os.environ['AUTH_PROVIDER_X509_CERT_URL'])
+##print('CLIENT_X509_CERT_URL:', os.environ['CLIENT_X509_CERT_URL'])
 
 # 設定 Service Account Credentials
 ##creds = Credentials.from_service_account_info({
