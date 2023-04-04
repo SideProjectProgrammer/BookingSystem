@@ -68,6 +68,8 @@ def list_todays_events():
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
     today_end = now.replace(hour=23, minute=59, second=59, microsecond=0).isoformat()
 
+    today_start = '2020-09-02T19:00:00+08:00'
+    today_end = '2020-09-02T21:00:00+08:00'
 
     print('today_start:', today_start)
     print('today_end:', today_end)
