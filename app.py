@@ -15,7 +15,7 @@ SERVICE_ACCOUNT_KEY = os.environ['SERVICE_ACCOUNT_KEY'].replace('\\n', '\n')
 CALENDAR_ID = os.environ['CALENDAR_ID']
 TIMEZONE = os.environ['TIMEZONE']
 
-print('SERVICE_ACCOUNT_EMAIL:', os.environ['SERVICE_ACCOUNT_EMAIL'], file=sys.stdout)
+##print('SERVICE_ACCOUNT_EMAIL:', os.environ['SERVICE_ACCOUNT_EMAIL'])
 ##print('SERVICE_ACCOUNT_KEY:', os.environ['SERVICE_ACCOUNT_KEY'])
 ##print('CALENDAR_ID:', os.environ['CALENDAR_ID'])
 ##print('TIMEZONE:', os.environ['TIMEZONE'])
