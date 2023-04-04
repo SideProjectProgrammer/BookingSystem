@@ -1,4 +1,4 @@
-flask=2.2.2
+Flask==2.2.2
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
