@@ -44,8 +44,9 @@ def list_todays_events():
     now = datetime.now(tz=pytz.utc).astimezone(TARGET_TIMEZONE)
 
     # 取得當天起始時間和結束時間
-    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc).isoformat()
-    today_end = now.replace(hour=23, minute=59, second=59, microsecond=0).astimezone(pytz.utc).isoformat()
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+    today_end = now.replace(hour=23, minute=59, second=59, microsecond=0).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+
 
     print('today_start:', today_start)
     print('today_end:', today_end)
