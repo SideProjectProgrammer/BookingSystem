@@ -11,8 +11,8 @@ app = Flask(__name__)
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 SERVICE_ACCOUNT_EMAIL = os.environ['SERVICE_ACCOUNT_EMAIL']
 SERVICE_ACCOUNT_KEY = os.environ['SERVICE_ACCOUNT_KEY'].replace('\\n', '\n')
-##CALENDAR_ID = os.environ['CALENDAR_ID']
-##TIMEZONE = os.environ['TIMEZONE']
+CALENDAR_ID = os.environ['CALENDAR_ID']
+TIMEZONE = os.environ['TIMEZONE']
 
 ##print('CALENDAR_ID:', os.environ['CALENDAR_ID'])
 ##print('TIMEZONE:', os.environ['TIMEZONE'])
