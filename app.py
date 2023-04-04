@@ -51,10 +51,11 @@ calendar_service = build('calendar', 'v3', credentials=creds)
 def list_todays_events():
 ##    return 'Hello, World!'
     # 設定目標時區
-    TARGET_TIMEZONE = pytz.timezone(TIMEZONE)
+    TARGET_TIMEZONE = pytz.timezone(os.environ['TIMEZONE'])
 
     # 取得當前時間
-    now = datetime.now(tz=pytz.utc)
+    now = datetime.now(tz=TARGET_TIMEZONE)
+
 
     # 將 UTC 時間轉換成目標時區的時間
     now = now.astimezone(TARGET_TIMEZONE)
@@ -64,8 +65,8 @@ def list_todays_events():
     today_end = datetime(now.year, now.month, now.day, 23, 59, 59, tzinfo=TARGET_TIMEZONE).isoformat()
 
     # 將時間字串轉換成 ISO 格式
-    today_start = datetime.fromisoformat(today_start).isoformat() + 'Z'
-    today_end = datetime.fromisoformat(today_end).isoformat() + 'Z'
+    today_start = datetime.fromisoformat(today_start).astimezone(TARGET_TIMEZONE).isoformat() + 'Z'
+    today_end = datetime.fromisoformat(today_end).astimezone(TARGET_TIMEZONE).isoformat() + 'Z'
 
     print('today_start:', today_start)
     print('today_end:', today_end)
