@@ -61,15 +61,15 @@ def list_todays_events():
     now = now.astimezone(TARGET_TIMEZONE)
 
     # 取得當天起始時間和結束時間
-    today_start = datetime(now.year, now.month, now.day, 0, 0, 0, tzinfo=TARGET_TIMEZONE).isoformat()
-    today_end = datetime(now.year, now.month, now.day, 23, 59, 59, tzinfo=TARGET_TIMEZONE).isoformat()
+##    today_start = datetime(now.year, now.month, now.day, 0, 0, 0, tzinfo=TARGET_TIMEZONE).isoformat()
+##    today_end = datetime(now.year, now.month, now.day, 23, 59, 59, tzinfo=TARGET_TIMEZONE).isoformat()
 
     # 將日期轉成iso格式
-    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
-    today_end = now.replace(hour=23, minute=59, second=59, microsecond=0).isoformat()
+##    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+##    today_end = now.replace(hour=23, minute=59, second=59, microsecond=0).isoformat()
 
-    today_start = '2020-09-02T19:00:00+08:00'
-    today_end = '2020-09-02T21:00:00+08:00'
+    today_start = '2023-04-04T19:00:00+08:00'
+    today_end = '2023-04-04T21:00:00+08:00'
 
     print('today_start:', today_start)
     print('today_end:', today_end)
