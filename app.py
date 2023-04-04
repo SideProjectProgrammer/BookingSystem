@@ -64,12 +64,9 @@ def list_todays_events():
     today_start = datetime(now.year, now.month, now.day, 0, 0, 0, tzinfo=TARGET_TIMEZONE).isoformat()
     today_end = datetime(now.year, now.month, now.day, 23, 59, 59, tzinfo=TARGET_TIMEZONE).isoformat()
 
-    # 將時間字串轉換成 ISO 格式
-    today_start = datetime.fromisoformat(today_start).astimezone(TARGET_TIMEZONE).isoformat() + 'Z'
-    today_end = datetime.fromisoformat(today_end).astimezone(TARGET_TIMEZONE).isoformat() + 'Z'
-
     print('today_start:', today_start)
     print('today_end:', today_end)
+
 
     # 使用 Calendar API 取得當天的預約
     try:
