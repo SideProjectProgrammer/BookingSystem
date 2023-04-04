@@ -39,7 +39,7 @@ creds = Credentials.from_service_account_info({
     "token_uri": os.environ['TOKEN_URI'],
     "auth_provider_x509_cert_url": os.environ['AUTH_PROVIDER_X509_CERT_URL'],
     "client_x509_cert_url": os.environ['CLIENT_X509_CERT_URL']
-}, scopes=SCOPES)
+}, scopes=SCOPES, subject=SERVICE_ACCOUNT_EMAIL)
 
 # 設定 Calendar API client
 calendar_service = build('calendar', 'v3', credentials=creds)
@@ -75,4 +75,5 @@ def list_todays_events():
     return jsonify({'events': event_list})
 
 if __name__ == '__main__':
+    creds.refresh(Request()) # 更新 Token
     app.run()
