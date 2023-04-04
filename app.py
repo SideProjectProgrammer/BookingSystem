@@ -10,7 +10,7 @@ app = Flask(__name__)
 # 從環境變數中讀取 Google 相關變數
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 SERVICE_ACCOUNT_EMAIL = os.environ['SERVICE_ACCOUNT_EMAIL']
-##SERVICE_ACCOUNT_KEY = os.environ['SERVICE_ACCOUNT_KEY'].replace('\\n', '\n')
+SERVICE_ACCOUNT_KEY = os.environ['SERVICE_ACCOUNT_KEY'].replace('\\n', '\n')
 ##CALENDAR_ID = os.environ['CALENDAR_ID']
 ##TIMEZONE = os.environ['TIMEZONE']
 
