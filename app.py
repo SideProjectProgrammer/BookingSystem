@@ -61,6 +61,7 @@ def list_todays_events():
         events = events_result.get('items', [])
     except HttpError as error:
         print('Google Calendar API error:', error)
+        print(error.content)
         return jsonify({'error': 'Google Calendar API error: %s' % error}), 500
 
     # 回傳預約資訊
