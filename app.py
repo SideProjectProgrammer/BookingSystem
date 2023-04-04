@@ -17,18 +17,6 @@ SERVICE_ACCOUNT_KEY = os.environ['SERVICE_ACCOUNT_KEY'].replace('\\n', '\n')
 CALENDAR_ID = os.environ['CALENDAR_ID']
 TIMEZONE = os.environ['TIMEZONE']
 
-##print('SERVICE_ACCOUNT_EMAIL:', os.environ['SERVICE_ACCOUNT_EMAIL'])
-##print('SERVICE_ACCOUNT_KEY:', os.environ['SERVICE_ACCOUNT_KEY'])
-##print('CALENDAR_ID:', os.environ['CALENDAR_ID'])
-##print('TIMEZONE:', os.environ['TIMEZONE'])
-##print('PROJECT_ID:', os.environ['PROJECT_ID'])
-##print('PRIVATE_KEY_ID:', os.environ['PRIVATE_KEY_ID'])
-##print('CLIENT_ID:', os.environ['CLIENT_ID'])
-##print('AUTH_URI:', os.environ['AUTH_URI'])
-##print('TOKEN_URI:', os.environ['TOKEN_URI'])
-##print('AUTH_PROVIDER_X509_CERT_URL:', os.environ['AUTH_PROVIDER_X509_CERT_URL'])
-##print('CLIENT_X509_CERT_URL:', os.environ['CLIENT_X509_CERT_URL'])
-
 # 設定 Service Account Credentials
 creds = Credentials.from_service_account_info({
     "type": "service_account",
@@ -49,16 +37,11 @@ calendar_service = build('calendar', 'v3', credentials=creds)
 
 @app.route('/')
 def list_todays_events():
-##    return 'Hello, World!'
     # 設定目標時區
-    TARGET_TIMEZONE = pytz.timezone(os.environ['TIMEZONE'])
+    TARGET_TIMEZONE = tz.gettz(os.environ['TIMEZONE'])
 
     # 取得當前時間
-    now = datetime.now(tz=TARGET_TIMEZONE)
-
-
-    # 將 UTC 時間轉換成目標時區的時間
-    now = now.astimezone(TARGET_TIMEZONE)
+    now = datetime.now(tz=pytz.utc).astimezone(TARGET_TIMEZONE)
 
     # 取得當天起始時間和結束時間
     today_start = datetime(now.year, now.month, now.day, 0, 0, 0, tzinfo=TARGET_TIMEZONE).isoformat()
