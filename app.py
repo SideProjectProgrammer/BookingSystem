@@ -72,5 +72,12 @@ def list_todays_events():
     return jsonify({'events': event_list})
 
 if __name__ == '__main__':
-    creds.refresh(Request()) # 更新 Token
+    while True:
+        try:
+            creds.refresh(Request()) # 更新 Token
+            break
+        except Exception as e:
+            print('Token refresh error:', e)
+            time.sleep(5)
+
     app.run()
