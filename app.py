@@ -48,14 +48,10 @@ def list_todays_events():
         print('No upcoming events found.')
         return
 
-    # 回傳預約資訊
-    event_list = []
+    # Prints the start and name of the next 10 events
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
-        start_time = datetime.datetime.fromisoformat(start).strftime('%H:%M')
-        event_list.append({'title': event['summary'], 'start_time': start_time})
-
-    return jsonify({'events': event_list})
+        print(start, event['summary'])
 
 if __name__ == '__main__':
     app.run()
