@@ -1,63 +1,62 @@
-from __future__ import print_function
-
-import datetime
-import os.path
-
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
+import os
+import pytz
+from dateutil import tz
+from google.oauth2.service_account import Credentials
 from googleapiclient.errors import HttpError
+from googleapiclient.discovery import build
+from flask import Flask, jsonify
 
-# If modifying these scopes, delete the file token.json.#
+app = Flask(__name__)
+
+# 從環境變數中讀取 Google 相關變數
 SCOPES = ['https://www.googleapis.com/auth/calendar']
+SERVICE_ACCOUNT_EMAIL = os.environ['SERVICE_ACCOUNT_EMAIL']
+SERVICE_ACCOUNT_KEY = os.environ['SERVICE_ACCOUNT_KEY'].replace('\\n', '\n')
+CALENDAR_ID = os.environ['CALENDAR_ID']
+TIMEZONE = os.environ['TIMEZONE']
+
+# 設定 Service Account Credentials
+creds = Credentials.from_service_account_info({
+    "type": "service_account",
+    "project_id": os.environ['PROJECT_ID'],
+    "private_key_id": os.environ['PRIVATE_KEY_ID'],
+    "private_key": SERVICE_ACCOUNT_KEY,
+    "client_email": SERVICE_ACCOUNT_EMAIL,
+    "client_id": os.environ['CLIENT_ID'],
+    "auth_uri": os.environ['AUTH_URI'],
+    "token_uri": os.environ['TOKEN_URI'],
+    "auth_provider_x509_cert_url": os.environ['AUTH_PROVIDER_X509_CERT_URL'],
+    "client_x509_cert_url": os.environ['CLIENT_X509_CERT_URL']
+}, scopes=SCOPES, subject=SERVICE_ACCOUNT_EMAIL)
+
+# 設定 Calendar API client
+calendar_service = build('calendar', 'v3', credentials=creds)
 
 
-def main():
-    """Shows basic usage of the Google Calendar API.
-    Prints the start and name of the next 10 events on the user's calendar.
-    """
-    creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
+@app.route('/')
+def list_todays_events():
+    # 設定目標時區
+    TARGET_TIMEZONE = tz.gettz(os.environ['TIMEZONE'])
 
-    try:
-        service = build('calendar', 'v3', credentials=creds)
+    # 取得當前時間
+    now = datetime.now(tz=pytz.utc).astimezone(TARGET_TIMEZONE)
 
-        # Call the Calendar API
-        now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-        print('Getting the upcoming 10 events')
-        events_result = service.events().list(calendarId='primary', timeMin=now,
-                                              maxResults=10, singleEvents=True,
-                                              orderBy='startTime').execute()
-        events = events_result.get('items', [])
+    # 取得前 10 個事件
+    events_result = calendar_service.events().list(calendarId='primary', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute()
+    events = events_result.get('items', [])
 
-        if not events:
-            print('No upcoming events found.')
-            return
+    if not events:
+        print('No upcoming events found.')
+        return
 
-        # Prints the start and name of the next 10 events
-        for event in events:
-            start = event['start'].get('dateTime', event['start'].get('date'))
-            print(start, event['summary'])
+    # 回傳預約資訊
+    event_list = []
+    for event in events:
+        start = event['start'].get('dateTime', event['start'].get('date'))
+        start_time = datetime.fromisoformat(start).strftime('%H:%M')
+        event_list.append({'title': event['summary'], 'start_time': start_time})
 
-    except HttpError as error:
-        print('An error occurred: %s' % error)
-
+    return jsonify({'events': event_list})
 
 if __name__ == '__main__':
-    main()
+    app.run()
