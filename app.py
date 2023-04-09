@@ -46,7 +46,7 @@ def list_todays_events():
 
     if not events:
         print('No upcoming events found.')
-        return
+        return jsonify({'events': []})
 
     # 回傳預約資訊
     event_list = []
