@@ -6,6 +6,7 @@ from google.oauth2.service_account import Credentials
 from googleapiclient.errors import HttpError
 from googleapiclient.discovery import build
 from flask import Flask, jsonify
+import json
 
 app = Flask(__name__)
 
@@ -51,7 +52,7 @@ def list_todays_events():
     event_list = []
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
-        start_time = datetime.fromisoformat(start).strftime('%H:%M')
+        start_time = datetime.datetime.fromisoformat(start).strftime('%H:%M')
         event_list.append({'title': event['summary'], 'start_time': start_time})
 
     return jsonify({'events': event_list})
