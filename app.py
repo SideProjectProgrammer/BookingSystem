@@ -47,11 +47,6 @@ def list_todays_events():
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
     today_end = now.replace(hour=23, minute=59, second=59, microsecond=0).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
-
-    print('today_start:', today_start)
-    print('today_end:', today_end)
-
-
     # 使用 Calendar API 取得當天的預約
     try:
         events_result = calendar_service.events().list(calendarId=CALENDAR_ID, timeMin=today_start, timeMax=today_end, singleEvents=True, orderBy='startTime').execute()
@@ -68,16 +63,7 @@ def list_todays_events():
         start_time = datetime.fromisoformat(start).strftime('%H:%M')
         event_list.append({'title': event['summary'], 'start_time': start_time})
 
-    print('event_list:', event_list) # 印出event_list的值
     return jsonify({'events': event_list})
 
 if __name__ == '__main__':
-    while True:
-        try:
-            creds.refresh(Request()) # 更新 Token
-            break
-        except Exception as e:
-            print('Token refresh error:', e)
-            time.sleep(5)
-
     app.run()
