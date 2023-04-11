@@ -47,7 +47,7 @@ def list_todays_events():
     end_of_day = now.replace(hour=22, minute=0, second=0, microsecond=0, tzinfo=pytz.utc)
 
     # 取得今天的事件
-    events_result = calendar_service.events().list(calendarId='primary', timeMin=start_of_day.isoformat(), timeMax=end_of_day.isoformat(), singleEvents=True, orderBy='startTime').execute()
+    events_result = calendar_service.events().list(calendarId=CALENDAR_ID, timeMin=start_of_day.isoformat(), timeMax=end_of_day.isoformat(), singleEvents=True, orderBy='startTime').execute()
     events = events_result.get('items', [])
 
     if not events:
