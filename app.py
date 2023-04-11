@@ -90,7 +90,7 @@ def list_todays_events():
         free_times.append((busy_times[-1][1], end_of_day))
 
     # 將空閒時間轉換成格式化字串
-    free_time_list = [f"{start.strftime('%H:%M')} - {end.strftime('%H:%M')}" for start, end in free_times]
+    free_time_list = [f"{start.strftime('%H:%M')} - {end.strftime('%H:%M')}" for start, end in busy_times]
 
     return jsonify({'free_time': free_time_list})
 
