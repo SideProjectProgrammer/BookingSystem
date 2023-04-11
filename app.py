@@ -1,12 +1,12 @@
 import os
+import sys
 import pytz
-import datetime
 from dateutil import tz
+from datetime import datetime, time, timedelta
 from google.oauth2.service_account import Credentials
 from googleapiclient.errors import HttpError
 from googleapiclient.discovery import build
 from flask import Flask, jsonify
-import json
 
 app = Flask(__name__)
 
@@ -37,36 +37,28 @@ def list_todays_events():
     # 設定目標時區
     TARGET_TIMEZONE = tz.gettz(os.environ['TIMEZONE'])
 
-    # 取得今天早上8點和晚上10點之前的時間範圍
-    now = datetime.datetime.now(TARGET_TIMEZONE).replace(tzinfo=None)
-    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-    end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=0).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+    # 取得當前時間
+    now = datetime.now(tz=pytz.utc).astimezone(TARGET_TIMEZONE)
 
+    # 取得當天起始時間和結束時間
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+    today_end = now.replace(hour=23, minute=59, second=59, microsecond=0).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
-    # 取得今天的所有事件
-    events_result = calendar_service.events().list(calendarId='primary', timeMin=start_of_day, timeMax=end_of_day, singleEvents=True, orderBy='startTime').execute()
-    events = events_result.get('items', [])
+    # 使用 Calendar API 取得當天的預約
+    try:
+        events_result = calendar_service.events().list(calendarId=CALENDAR_ID, timeMin=today_start, timeMax=today_end, singleEvents=True, orderBy='startTime').execute()
+        events = events_result.get('items', [])
+    except HttpError as error:
+        print('Google Calendar API error:', error)
+        print(error.content)
+        return jsonify({'error': 'Google Calendar API error: %s' % error}), 500
 
-    # 計算可安排的時段
+    # 回傳預約資訊
     event_list = []
-    start_time = start_of_day
     for event in events:
-        event_start = event['start'].get('dateTime', event['start'].get('date'))
-        event_start = datetime.datetime.fromisoformat(event_start).astimezone(TARGET_TIMEZONE)
-        event_end = event['end'].get('dateTime', event['end'].get('date'))
-        event_end = datetime.datetime.fromisoformat(event_end).astimezone(TARGET_TIMEZONE)
-
-        if start_time < event_start:
-            end_time = event_start
-            event_list.append({'start_time': start_time.strftime('%H:%M'), 'end_time': end_time.strftime('%H:%M'), 'title': 'No event scheduled'})
-        start_time = event_end
-        start_time = start_time.replace(tzinfo=None)
-        end_time = end_time.replace(tzinfo=None)
-
-
-    if start_time < end_of_day:
-        end_time = end_of_day
-        event_list.append({'start_time': start_time.strftime('%H:%M'), 'end_time': end_time.strftime('%H:%M'), 'title': 'No event scheduled'})
+        start = event['start'].get('dateTime', event['start'].get('date'))
+        start_time = datetime.fromisoformat(start).strftime('%H:%M')
+        event_list.append({'title': event['summary'], 'start_time': start_time})
 
     return jsonify({'events': event_list})
 
