@@ -58,17 +58,10 @@ def list_todays_events():
     events = events_result.get('items', [])
 
     if not events:
-        # 如果沒有任何事件發生，直接回傳空的 free_time_list
+        # 如果沒有任何事件發生，直接回傳五個預設時間區間
         return jsonify({'free_time': ['08:00 - 09:59', '10:00 - 11:59', '14:00 - 15:59', '16:00 - 17:59', '19:00 - 20:59']})
 
-    # 計算空閒時間
-    busy_times = []
-    for event in events:
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        end = event['end'].get('dateTime', event['end'].get('date'))
-        busy_times.append((datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE), datetime.datetime.fromisoformat(end).astimezone(TARGET_TIMEZONE)))
-
-    # 計算空閒時間
+    # 計算忙碌時間
     busy_times = []
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
@@ -76,19 +69,18 @@ def list_todays_events():
         busy_times.append((datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE), datetime.datetime.fromisoformat(end).astimezone(TARGET_TIMEZONE)))
 
     free_times = []
-    # 檢查第一個事件是否從早上 8 點之前開始，如果是，就計算從早上 8 點開始到第一個事件開始之間的空閒時間
-    if busy_times[0][0] > start_of_day:
-        free_times.append((start_of_day, busy_times[0][0]))
-
-    # 檢查其他事件之間的空閒時間
-    for i in range(len(busy_times) - 1):
-        if busy_times[i+1][0] > busy_times[i][1]:
-            free_times.append((busy_times[i][1], busy_times[i+1][0]))
-
-    # 檢查最後一個事件是否在晚上 10 點之前結束，如果是，就計算從最後一個事件結束到晚上 10 點之間的空閒時間
-    if busy_times[-1][1] < end_of_day:
-        free_times.append((busy_times[-1][1], end_of_day))
-
+    # 檢查五個時間區間是否有事件發生
+    for i in range(5):
+        start_time = start_of_day + datetime.timedelta(hours=i*2)
+        end_time = start_of_day + datetime.timedelta(hours=(i+1)*2)
+        is_busy = False
+        for busy_time in busy_times:
+            if busy_time[0] < end_time and start_time < busy_time[1]:
+                is_busy = True
+                break
+        if not is_busy:
+            free_times.append((start_time, end_time))
+            
     # 將空閒時間轉換成格式化字串
     free_time_list = [f"{start.strftime('%H:%M')} - {end.strftime('%H:%M')}" for start, end in busy_times]
 
