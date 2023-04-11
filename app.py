@@ -78,19 +78,14 @@ def list_todays_events():
     # 設定新的時間段
     time_periods = [('08:00', '09:59'), ('10:00', '11:59'), ('14:00', '15:59'), ('16:00', '17:59'), ('19:00', '20:59')]
 
-    # 将时间段转换为 datetime 对象
-    time_periods = [(datetime.datetime.strptime(start, '%H:%M'), datetime.datetime.strptime(end, '%H:%M')) for start, end in time_periods]
+    # 將時間段轉換為帶有時區資訊的 datetime 物件
+    time_periods = [(datetime.datetime.strptime(start, '%H:%M').replace(tzinfo=TARGET_TIMEZONE), datetime.datetime.strptime(end, '%H:%M').replace(tzinfo=TARGET_TIMEZONE)) for start, end in time_periods]
 
     for busy_start, busy_end in busy_times:
-        # 遍历每个时间段
         for period_start, period_end in time_periods:
-            # 將 period_start 和 period_end 轉換為帶有時區資訊的 datetime 物件
-            period_start = pytz.timezone(TIMEZONE).localize(period_start)
-            period_end = pytz.timezone(TIMEZONE).localize(period_end)
-
-            # 如果該時間段與忙碌時間有重疊，則將該時間段添加到 busy_times 中
-            if (busy_start <= period_start <= busy_end) or (busy_start <= period_end <= busy_end):
-                busy_times.append((period_start, period_end))
+            # 如果時間段沒有重疊，將它添加到 free_times 中
+            if busy_end <= period_start or busy_start >= period_end:
+                free_times.append((max(busy_start, period_start), min(busy_end, period_end)))
 
         # 对busy_times进行排序
         busy_times.sort()
