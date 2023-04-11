@@ -1,5 +1,4 @@
 import os
-import sys
 import pytz
 from dateutil import tz
 from datetime import datetime, time, timedelta
@@ -33,20 +32,24 @@ calendar_service = build('calendar', 'v3', credentials=creds)
 
 
 @app.route('/')
-def list_todays_events():
+def list_upcoming_events():
     # 設定目標時區
     TARGET_TIMEZONE = tz.gettz(os.environ['TIMEZONE'])
 
     # 取得當前時間
     now = datetime.now(tz=pytz.utc).astimezone(TARGET_TIMEZONE)
 
-    # 取得當天起始時間和結束時間
-    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-    today_end = now.replace(hour=23, minute=59, second=59, microsecond=0).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+    # 設定查詢時間範圍
+    start_date = now.date()
+    end_date = start_date + timedelta(days=7)
 
-    # 使用 Calendar API 取得當天的預約
+    # 轉換為 UTC 時間
+    start_utc = datetime.combine(start_date, time.min).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+    end_utc = datetime.combine(end_date, time.max).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+
+    # 使用 Calendar API 取得未來 7 天的預約
     try:
-        events_result = calendar_service.events().list(calendarId=CALENDAR_ID, timeMin=today_start, timeMax=today_end, singleEvents=True, orderBy='startTime').execute()
+        events_result = calendar_service.events().list(calendarId=CALENDAR_ID, timeMin=start_utc, timeMax=end_utc, singleEvents=True, orderBy='startTime').execute()
         events = events_result.get('items', [])
     except HttpError as error:
         print('Google Calendar API error:', error)
@@ -61,6 +64,7 @@ def list_todays_events():
         event_list.append({'title': event['summary'], 'start_time': start_time})
 
     return jsonify({'events': event_list})
+
 
 if __name__ == '__main__':
     app.run()
