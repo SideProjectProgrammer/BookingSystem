@@ -50,9 +50,9 @@ def list_todays_events():
     events_result = calendar_service.events().list(calendarId='primary', timeMin=start_of_day.isoformat(), timeMax=end_of_day.isoformat(), singleEvents=True, orderBy='startTime').execute()
     events = events_result.get('items', [])
 
-    if not events:
-        print('No upcoming events found.')
-        return jsonify({'events': []})
+##    if not events:
+##        print('No upcoming events found.')
+##        return jsonify({'events': []})
 
     # 計算空閒時間
     busy_times = []
