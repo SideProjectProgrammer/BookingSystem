@@ -59,7 +59,14 @@ def list_todays_events():
 
     if not events:
         # 如果沒有任何事件發生，直接回傳空的 free_time_list
-        return jsonify({'free_time': []})
+        return jsonify({'free_time': ['08:00 - 09:59', '10:00 - 11:59', '14:00 - 15:59', '16:00 - 17:59', '19:00 - 20:59']})
+
+    # 計算空閒時間
+    busy_times = []
+    for event in events:
+        start = event['start'].get('dateTime', event['start'].get('date'))
+        end = event['end'].get('dateTime', event['end'].get('date'))
+        busy_times.append((datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE), datetime.datetime.fromisoformat(end).ast
 
     # 計算空閒時間
     busy_times = []
@@ -68,40 +75,22 @@ def list_todays_events():
         end = event['end'].get('dateTime', event['end'].get('date'))
         busy_times.append((datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE), datetime.datetime.fromisoformat(end).astimezone(TARGET_TIMEZONE)))
 
-    # 排序busy_times以方便計算空閒時間
-    busy_times.sort()
-
-    # 計算空閒時間
     free_times = []
-    start_time = start_of_day
+    # 檢查第一個事件是否從早上 8 點之前開始，如果是，就計算從早上 8 點開始到第一個事件開始之間的空閒時間
+    if busy_times[0][0] > start_of_day:
+        free_times.append((start_of_day, busy_times[0][0]))
 
-    # 設定新的時間段
-    time_periods = [('08:00', '09:59'), ('10:00', '11:59'), ('14:00', '15:59'), ('16:00', '17:59'), ('19:00', '20:59')]
+    # 檢查其他事件之間的空閒時間
+    for i in range(len(busy_times) - 1):
+        if busy_times[i+1][0] > busy_times[i][1]:
+            free_times.append((busy_times[i][1], busy_times[i+1][0]))
 
-    # 將時間段轉換為帶有時區資訊的 datetime 物件
-    time_periods = [(datetime.datetime.strptime(start, '%H:%M').replace(tzinfo=TARGET_TIMEZONE), datetime.datetime.strptime(end, '%H:%M').replace(tzinfo=TARGET_TIMEZONE)) for start, end in time_periods]
+    # 檢查最後一個事件是否在晚上 10 點之前結束，如果是，就計算從最後一個事件結束到晚上 10 點之間的空閒時間
+    if busy_times[-1][1] < end_of_day:
+        free_times.append((busy_times[-1][1], end_of_day))
 
-    for busy_start, busy_end in busy_times:
-        for period_start, period_end in time_periods:
-            # 如果時間段沒有重疊，將它添加到 free_times 中
-            if busy_end <= period_start or busy_start >= period_end:
-                free_times.append((max(busy_start, period_start), min(busy_end, period_end)))
-
-        # 对busy_times进行排序
-        busy_times.sort()
-
-        # 计算空闲时间
-        for i in range(len(busy_times)-1):
-            free_start = busy_times[i][1]
-            free_end = busy_times[i+1][0]
-            if free_end - free_start >= datetime.timedelta(hours=2):
-                free_times.append((free_start, free_end))
-
-    # 回傳空閒時間
-    free_time_list = []
-    for free_time in free_times:
-        free_time_str = '{} - {}'.format(free_time[0].strftime('%H:%M'), free_time[1].strftime('%H:%M'))
-        free_time_list.append(free_time_str)
+    # 將空閒時間轉換成格式化字串
+    free_time_list = [f"{start.strftime('%H:%M')} - {end.strftime('%H:%M')}" for start, end in free_times]
 
     return jsonify({'free_time': free_time_list})
 
