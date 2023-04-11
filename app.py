@@ -54,14 +54,33 @@ def list_todays_events():
         print('No upcoming events found.')
         return jsonify({'events': []})
 
-    # 回傳預約資訊
-    event_list = []
+    # 計算空閒時間
+    busy_times = []
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
-        start_time = datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE).strftime('%H:%M')
-        event_list.append({'title': event['summary'], 'start_time': start_time})
+        end = event['end'].get('dateTime', event['end'].get('date'))
+        busy_times.append((datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE), datetime.datetime.fromisoformat(end).astimezone(TARGET_TIMEZONE)))
 
-    return jsonify({'events': event_list})
+    # 排序busy_times以方便計算空閒時間
+    busy_times.sort()
+
+    # 計算空閒時間
+    free_times = []
+    if busy_times[0][0] > start_of_day:
+        free_times.append((start_of_day, busy_times[0][0]))
+    for i in range(len(busy_times) - 1):
+        if busy_times[i][1] < busy_times[i + 1][0]:
+            free_times.append((busy_times[i][1], busy_times[i + 1][0]))
+    if busy_times[-1][1] < end_of_day:
+        free_times.append((busy_times[-1][1], end_of_day))
+
+    # 回傳空閒時間
+    free_time_list = []
+    for free_time in free_times:
+        free_time_str = '{} - {}'.format(free_time[0].strftime('%H:%M'), free_time[1].strftime('%H:%M'))
+        free_time_list.append(free_time_str)
+
+    return jsonify({'free_time': free_time_list})
 
 if __name__ == '__main__':
     app.run()
