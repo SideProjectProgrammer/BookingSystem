@@ -17,7 +17,7 @@ TIMEZONE = os.environ['TIMEZONE']
 
 # 設定 Service Account Credentials
 creds = None
-creds_filename = 'credentials.json'
+creds_filename = 'service_credentials.json'
 
 if os.path.exists(creds_filename):
     with open(creds_filename, 'r') as f:
