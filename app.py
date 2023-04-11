@@ -70,9 +70,16 @@ def list_todays_events():
 
     free_times = []
     # 檢查五個時間區間是否有事件發生
-    for i in range(5):
-        start_time = start_of_day + datetime.timedelta(hours=i*2)
-        end_time = start_of_day + datetime.timedelta(hours=(i+1)*2)
+    time_ranges = [
+        (datetime.time(8, 0), datetime.time(10, 0)),
+        (datetime.time(10, 0), datetime.time(12, 0)),
+        (datetime.time(14, 0), datetime.time(16, 0)),
+        (datetime.time(16, 0), datetime.time(18, 0)),
+        (datetime.time(19, 0), datetime.time(21, 0))
+    ]
+    for time_range in time_ranges:
+        start_time = datetime.datetime.combine(start_of_day, time_range[0]).astimezone(TARGET_TIMEZONE)
+        end_time = datetime.datetime.combine(start_of_day, time_range[1]).astimezone(TARGET_TIMEZONE)
         is_busy = False
         for busy_time in busy_times:
             if busy_time[0] < end_time and start_time < busy_time[1]:
