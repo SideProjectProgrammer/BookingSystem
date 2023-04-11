@@ -41,7 +41,7 @@ def list_todays_events():
     now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
 
     # 取得前 10 個事件
-    events_result = calendar_service.events().list(calendarId='primary', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute()
+    events_result = calendar_service.events().list(calendarId='chang.yu.chao@gmail.com', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute()
     events = events_result.get('items', [])
 
     if not events:
