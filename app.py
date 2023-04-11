@@ -47,7 +47,14 @@ def list_todays_events():
     end_of_day = now.replace(hour=22, minute=0, second=0, microsecond=0, tzinfo=pytz.utc)
 
     # 取得今天的事件
-    events_result = calendar_service.events().list(calendarId=CALENDAR_ID, timeMin=start_of_day.isoformat(), timeMax=end_of_day.isoformat(), singleEvents=True, orderBy='startTime').execute()
+    events_result = calendar_service.events().list(
+        calendarId=CALENDAR_ID,
+        timeMin=start_of_day.isoformat(),
+        timeMax=end_of_day.isoformat(),
+        singleEvents=True,
+        orderBy='startTime'
+    ).execute()
+
     events = events_result.get('items', [])
 
     if not events:
@@ -72,7 +79,8 @@ def list_todays_events():
         if busy_times[i][1] < busy_times[i + 1][0]:
             free_times.append((busy_times[i][1], busy_times[i + 1][0]))
     if busy_times[-1][1] < end_of_day:
-        free_times.append((busy_times[-1][1], end_of_day))
+        if end_of_day > busy_times[-1][1]:
+            free_times.append((busy_times[-1][1], end_of_day))
 
     # 回傳空閒時間
     free_time_list = []
