@@ -74,12 +74,29 @@ def list_todays_events():
     # 計算空閒時間
     free_times = []
     start_time = start_of_day
+
+    # 設定新的時間段
+    time_periods = [    ('08:00', '10:00'),    ('10:00', '12:00'),    ('14:00', '16:00'),    ('16:00', '18:00'),    ('19:00', '21:00')]
+
+    # 将时间段转换为 datetime 对象
+    time_periods = [(datetime.datetime.strptime(start, '%H:%M'), datetime.datetime.strptime(end, '%H:%M')) for start, end in time_periods]
+
     for busy_start, busy_end in busy_times:
-        if busy_start - start_time >= datetime.timedelta(hours=2):
-            free_times.append((start_time, busy_start))
-        start_time = busy_end
-    if end_of_day - start_time >= datetime.timedelta(hours=2):
-        free_times.append((start_time, end_of_day))
+        # 遍历每个时间段
+        for period_start, period_end in time_periods:
+            # 如果该时间段与忙碌时间有重叠，则将该时间段添加到busy_times中
+            if (busy_start <= period_start <= busy_end) or (busy_start <= period_end <= busy_end):
+                busy_times.append((period_start, period_end))
+
+        # 对busy_times进行排序
+        busy_times.sort()
+
+        # 计算空闲时间
+        for i in range(len(busy_times)-1):
+            free_start = busy_times[i][1]
+            free_end = busy_times[i+1][0]
+            if free_end - free_start >= datetime.timedelta(hours=2):
+                free_times.append((free_start, free_end))
 
     # 回傳空閒時間
     free_time_list = []
