@@ -68,6 +68,7 @@ def list_todays_events():
         end = event['end'].get('dateTime', event['end'].get('date'))
         busy_times.append((datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE), datetime.datetime.fromisoformat(end).ast
 
+
     # 計算空閒時間
     busy_times = []
     for event in events:
