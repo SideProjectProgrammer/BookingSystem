@@ -84,7 +84,11 @@ def list_todays_events():
     for busy_start, busy_end in busy_times:
         # 遍历每个时间段
         for period_start, period_end in time_periods:
-            # 如果该时间段与忙碌时间有重叠，则将该时间段添加到busy_times中
+            # 將 period_start 和 period_end 轉換為帶有時區資訊的 datetime 物件
+            period_start = pytz.timezone(TIMEZONE).localize(period_start)
+            period_end = pytz.timezone(TIMEZONE).localize(period_end)
+
+            # 如果該時間段與忙碌時間有重疊，則將該時間段添加到 busy_times 中
             if (busy_start <= period_start <= busy_end) or (busy_start <= period_end <= busy_end):
                 busy_times.append((period_start, period_end))
 
