@@ -76,7 +76,7 @@ def list_todays_events():
     start_time = start_of_day
 
     # 設定新的時間段
-    time_periods = [    ('08:00', '10:00'),    ('10:00', '12:00'),    ('14:00', '16:00'),    ('16:00', '18:00'),    ('19:00', '21:00')]
+    time_periods = [('08:00', '09:59'), ('10:00', '11:59'), ('14:00', '15:59'), ('16:00', '17:59'), ('19:00', '20:59')]
 
     # 将时间段转换为 datetime 对象
     time_periods = [(datetime.datetime.strptime(start, '%H:%M'), datetime.datetime.strptime(end, '%H:%M')) for start, end in time_periods]
