@@ -37,11 +37,13 @@ def list_todays_events():
     # 設定目標時區
     TARGET_TIMEZONE = tz.gettz(os.environ['TIMEZONE'])
 
-    # 取得當前時間
-    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+    # 取得今天早上8點和晚上10點的時間
+    now = datetime.datetime.now(TARGET_TIMEZONE)
+    start_of_day = datetime.datetime(now.year, now.month, now.day, 8, 0, 0, tzinfo=TARGET_TIMEZONE).isoformat()
+    end_of_day = datetime.datetime(now.year, now.month, now.day, 22, 0, 0, tzinfo=TARGET_TIMEZONE).isoformat()
 
-    # 取得前 10 個事件
-    events_result = calendar_service.events().list(calendarId='primary', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute()
+    # 取得符合條件的事件
+    events_result = calendar_service.events().list(calendarId='primary', timeMin=start_of_day, timeMax=end_of_day, singleEvents=True, orderBy='startTime').execute()
     events = events_result.get('items', [])
 
     if not events:
