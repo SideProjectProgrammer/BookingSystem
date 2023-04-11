@@ -39,8 +39,8 @@ def list_todays_events():
 
     # 取得今天早上8點和晚上10點之前的時間範圍
     now = datetime.datetime.now(TARGET_TIMEZONE).replace(tzinfo=None)
-    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=0)
+    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+    end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=0).astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
 
     # 取得今天的所有事件
