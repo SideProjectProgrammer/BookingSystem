@@ -73,14 +73,13 @@ def list_todays_events():
 
     # 計算空閒時間
     free_times = []
-    if busy_times[0][0] > start_of_day:
-        free_times.append((start_of_day, busy_times[0][0]))
-    for i in range(len(busy_times) - 1):
-        if busy_times[i][1] < busy_times[i + 1][0]:
-            free_times.append((busy_times[i][1], busy_times[i + 1][0]))
-    if busy_times[-1][1] < end_of_day:
-        if end_of_day > busy_times[-1][1]:
-            free_times.append((busy_times[-1][1], end_of_day))
+    start_time = start_of_day
+    for busy_start, busy_end in busy_times:
+        if busy_start - start_time >= datetime.timedelta(hours=2):
+            free_times.append((start_time, busy_start))
+        start_time = busy_end
+    if end_of_day - start_time >= datetime.timedelta(hours=2):
+        free_times.append((start_time, end_of_day))
 
     # 回傳空閒時間
     free_time_list = []
