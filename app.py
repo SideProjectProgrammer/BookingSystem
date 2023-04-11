@@ -38,9 +38,10 @@ def list_todays_events():
     TARGET_TIMEZONE = tz.gettz(os.environ['TIMEZONE'])
 
     # 取得今天早上8點和晚上10點之前的時間範圍
-    now = datetime.datetime.now(TARGET_TIMEZONE)
-    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-    end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=0).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+    now = datetime.datetime.now(TARGET_TIMEZONE).replace(tzinfo=None)
+    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=0)
+
 
     # 取得今天的所有事件
     events_result = calendar_service.events().list(calendarId='primary', timeMin=start_of_day, timeMax=end_of_day, singleEvents=True, orderBy='startTime').execute()
@@ -59,6 +60,9 @@ def list_todays_events():
             end_time = event_start
             event_list.append({'start_time': start_time.strftime('%H:%M'), 'end_time': end_time.strftime('%H:%M'), 'title': 'No event scheduled'})
         start_time = event_end
+        start_time = start_time.replace(tzinfo=None)
+        end_time = end_time.replace(tzinfo=None)
+
 
     if start_time < end_of_day:
         end_time = end_of_day
