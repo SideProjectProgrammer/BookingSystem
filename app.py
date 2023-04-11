@@ -37,25 +37,32 @@ def list_todays_events():
     # 設定目標時區
     TARGET_TIMEZONE = tz.gettz(os.environ['TIMEZONE'])
 
-    # 取得今天早上8點和晚上10點的時間
+    # 取得今天早上8點和晚上10點之前的時間範圍
     now = datetime.datetime.now(TARGET_TIMEZONE)
-    start_of_day = datetime.datetime(now.year, now.month, now.day, 8, 0, 0, tzinfo=TARGET_TIMEZONE).isoformat()
-    end_of_day = datetime.datetime(now.year, now.month, now.day, 22, 0, 0, tzinfo=TARGET_TIMEZONE).isoformat()
+    start_of_day = datetime.datetime(now.year, now.month, now.day, 8, 0, 0, tzinfo=TARGET_TIMEZONE)
+    end_of_day = datetime.datetime(now.year, now.month, now.day, 22, 0, 0, tzinfo=TARGET_TIMEZONE)
 
-    # 取得符合條件的事件
+    # 取得今天的所有事件
     events_result = calendar_service.events().list(calendarId='primary', timeMin=start_of_day, timeMax=end_of_day, singleEvents=True, orderBy='startTime').execute()
     events = events_result.get('items', [])
 
-    if not events:
-        print('No upcoming events found.')
-        return jsonify({'events': []})
-
-    # 回傳預約資訊
+    # 計算可安排的時段
     event_list = []
+    start_time = start_of_day
     for event in events:
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        start_time = datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE).strftime('%H:%M')
-        event_list.append({'title': event['summary'], 'start_time': start_time})
+        event_start = event['start'].get('dateTime', event['start'].get('date'))
+        event_start = datetime.datetime.fromisoformat(event_start).astimezone(TARGET_TIMEZONE)
+        event_end = event['end'].get('dateTime', event['end'].get('date'))
+        event_end = datetime.datetime.fromisoformat(event_end).astimezone(TARGET_TIMEZONE)
+
+        if start_time < event_start:
+            end_time = event_start
+            event_list.append({'start_time': start_time.strftime('%H:%M'), 'end_time': end_time.strftime('%H:%M'), 'title': 'No event scheduled'})
+        start_time = event_end
+
+    if start_time < end_of_day:
+        end_time = end_of_day
+        event_list.append({'start_time': start_time.strftime('%H:%M'), 'end_time': end_time.strftime('%H:%M'), 'title': 'No event scheduled'})
 
     return jsonify({'events': event_list})
 
