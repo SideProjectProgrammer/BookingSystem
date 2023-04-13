@@ -92,7 +92,7 @@ def list_todays_events():
 
     free_time_list = [free_time['time_slot'] for free_time in free_time_list if free_time['free']]
 
-    return jsonify({'free_time': free_time_list})
+    return jsonify({'free_time': busy_times})
 
 if __name__ == '__main__':
     app.run()
