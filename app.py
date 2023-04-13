@@ -50,13 +50,13 @@ def list_todays_events():
     events_result = calendar_service.events().list(
         calendarId=CALENDAR_ID,
         timeMin=start_of_day.isoformat(),
-        timeMax=(end_of_day + datetime.timedelta(days=7)).isoformat(),
+        timeMax=end_of_day.isoformat(),
         singleEvents=True,
         orderBy='startTime'
     ).execute()
 
     events = events_result.get('items', [])
-    return jsonify({'events': start_of_day})
+    return jsonify({'events': events})
     
     if not events:
         # 如果沒有任何事件發生，直接回傳五個預設時間區間
