@@ -82,7 +82,11 @@ def list_todays_events():
         start_time = datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE).time()
         end_time = datetime.datetime.fromisoformat(end).astimezone(TARGET_TIMEZONE).time()
         for free_time in free_time_list:
-            if start_time <= datetime.datetime.strptime(free_time['time_slot'].split(' - ')[1], '%H:%M').time() and end_time >= datetime.datetime.strptime(free_time['time_slot'].split(' - ')[0], '%H:%M').time():
+            if start_time < datetime.datetime.strptime(free_time['time_slot'].split(' - ')[1], '%H:%M').time() and end_time < datetime.datetime.strptime(free_time['time_slot'].split(' - ')[0], '%H:%M').time():
+                free_time['free'] = True
+            elif start_time > datetime.datetime.strptime(free_time['time_slot'].split(' - ')[1], '%H:%M').time() and end_time > datetime.datetime.strptime(free_time['time_slot'].split(' - ')[0], '%H:%M').time():
+                free_time['free'] = True
+            else:
                 free_time['free'] = False
 
 
