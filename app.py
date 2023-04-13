@@ -44,7 +44,7 @@ def list_todays_events():
     #start_of_day = now.replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=pytz.utc)
 
     # 設定今天晚上 10 點的 UTC 時間
-    #end_of_day = now.replace(hour=22, minute=0, second=0, microsecond=0, tzinfo=pytz.utc)
+##    end_of_day = now.replace(hour=22, minute=0, second=0, microsecond=0, tzinfo=pytz.utc)
 
     # 取得今天的事件
 ##    events_result = calendar_service.events().list(
