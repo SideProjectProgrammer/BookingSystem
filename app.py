@@ -17,7 +17,7 @@ TIMEZONE = os.environ['TIMEZONE']
 
 # 設定 Service Account Credentials
 creds = None
-creds_filename = 'service_credentials.json'
+creds_filename = 'credentials.json'
 
 if os.path.exists(creds_filename):
     with open(creds_filename, 'r') as f:
@@ -38,61 +38,24 @@ def list_todays_events():
     TARGET_TIMEZONE = tz.gettz(os.environ['TIMEZONE'])
 
     # 取得當前時間
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
 
-    # 設定今天早上 8 點的 UTC 時間
-    start_of_day = now.replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=pytz.utc)
-
-    # 設定今天晚上 10 點的 UTC 時間
-    end_of_day = now.replace(hour=22, minute=0, second=0, microsecond=0, tzinfo=pytz.utc)
-
-    # 取得今天的事件
-    events_result = calendar_service.events().list(
-        calendarId=CALENDAR_ID,
-        timeMin=start_of_day.isoformat(),
-        timeMax=end_of_day.isoformat(),
-        singleEvents=True,
-        orderBy='startTime'
-    ).execute()
-
+    # 取得前 10 個事件
+    events_result = calendar_service.events().list(calendarId='CALENDAR_ID', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute()
     events = events_result.get('items', [])
 
     if not events:
-        # 如果沒有任何事件發生，直接回傳五個預設時間區間
-        return jsonify({'free_time': ['08:00 - 09:59', '10:00 - 11:59', '14:00 - 15:59', '16:00 - 17:59', '19:00 - 20:590']})
+        print('No upcoming events found.')
+        return jsonify({'events': []})
 
-    # 計算忙碌時間
-    busy_times = []
+    # 回傳預約資訊
+    event_list = []
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
-        end = event['end'].get('dateTime', event['end'].get('date'))
-        busy_times.append((datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE), datetime.datetime.fromisoformat(end).astimezone(TARGET_TIMEZONE)))
+        start_time = datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE).strftime('%H:%M')
+        event_list.append({'title': event['summary'], 'start_time': start_time})
 
-    free_time_list = [
-        {'time_slot': '08:00 - 09:59', 'free': True},
-        {'time_slot': '10:00 - 11:59', 'free': True},
-        {'time_slot': '14:00 - 15:59', 'free': True},
-        {'time_slot': '16:00 - 17:59', 'free': True},
-        {'time_slot': '19:00 - 20:59', 'free': True}
-    ]
-
-    for event in events:
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        end = event['end'].get('dateTime', event['end'].get('date'))
-        start_time = datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE).time()
-        end_time = datetime.datetime.fromisoformat(end).astimezone(TARGET_TIMEZONE).time()
-        for free_time in free_time_list:
-            if start_time < datetime.datetime.strptime(free_time['time_slot'].split(' - ')[1], '%H:%M').time() and end_time < datetime.datetime.strptime(free_time['time_slot'].split(' - ')[0], '%H:%M').time():
-                free_time['free'] = True
-            elif start_time > datetime.datetime.strptime(free_time['time_slot'].split(' - ')[1], '%H:%M').time() and end_time > datetime.datetime.strptime(free_time['time_slot'].split(' - ')[0], '%H:%M').time():
-                free_time['free'] = True
-            else:
-                free_time['free'] = False
-
-
-    free_time_list = [free_time['time_slot'] for free_time in free_time_list if free_time['free']]
-
-    return jsonify({'free_time': busy_times})
+    return jsonify({'events': event_list})
 
 if __name__ == '__main__':
     app.run()
