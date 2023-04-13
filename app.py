@@ -81,6 +81,7 @@ def list_todays_events():
         end = event['end'].get('dateTime', event['end'].get('date'))
         start_time = datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE).time()
         end_time = datetime.datetime.fromisoformat(end).astimezone(TARGET_TIMEZONE).time()
+        return jsonify({'start_time': start_time})
         for free_time in free_time_list:
             if start_time < datetime.datetime.strptime(free_time['time_slot'].split(' - ')[1], '%H:%M').time().replace(tzinfo=TARGET_TIMEZONE) and end_time < datetime.datetime.strptime(free_time['time_slot'].split(' - ')[0], '%H:%M').time().replace(tzinfo=TARGET_TIMEZONE):
                 free_time['free'] = True
