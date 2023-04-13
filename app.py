@@ -41,10 +41,10 @@ def list_todays_events():
     now = datetime.datetime.utcnow()
 
     # 設定今天早上 8 點的 UTC 時間
-    #start_of_day = now.replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=pytz.utc)
+    start_of_day = now.replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=pytz.utc)
 
     # 設定今天晚上 10 點的 UTC 時間
-##    end_of_day = now.replace(hour=22, minute=0, second=0, microsecond=0, tzinfo=pytz.utc)
+    end_of_day = now.replace(hour=22, minute=0, second=0, microsecond=0, tzinfo=pytz.utc)
 
     # 取得今天的事件
 ##    events_result = calendar_service.events().list(
@@ -55,11 +55,7 @@ def list_todays_events():
 ##        orderBy='startTime'
 ##    ).execute()
 
-    # 取得當前時間
-    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-
-    # 取得前 10 個事件
-    events_result = calendar_service.events().list(calendarId='CALENDAR_ID', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute()
+    events_result = calendar_service.events().list(calendarId='CALENDAR_ID', timeMin=start_of_day, maxResults=10, singleEvents=True, orderBy='startTime').execute()
 
     events = events_result.get('items', [])
     return jsonify({'events': events})
