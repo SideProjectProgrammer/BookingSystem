@@ -38,7 +38,7 @@ def list_todays_events():
     TARGET_TIMEZONE = tz.gettz(os.environ['TIMEZONE'])
 
     # 取得當前時間
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.utcnow().replace(tzinfo=tz.UTC).astimezone(TARGET_TIMEZONE)
 
     # 設定今天早上 8 點的 UTC 時間
     start_of_day = now.replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=pytz.utc)
