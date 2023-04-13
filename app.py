@@ -50,7 +50,7 @@ def list_todays_events():
     events_result = calendar_service.events().list(
         calendarId=CALENDAR_ID,
         timeMin=start_of_day.isoformat(),
-        timeMax=end_of_day+ timedelta(days=7)).isoformat(),
+        timeMax=(end_of_day + datetime.timedelta(days=7)).isoformat(),
         singleEvents=True,
         orderBy='startTime'
     ).execute()
