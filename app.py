@@ -56,7 +56,7 @@ def list_todays_events():
     ).execute()
 
     events = events_result.get('items', [])
-    return jsonify({'events': events})
+    return jsonify({'events': start_of_day})
     
     if not events:
         # 如果沒有任何事件發生，直接回傳五個預設時間區間
