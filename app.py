@@ -68,28 +68,24 @@ def list_todays_events():
         end = event['end'].get('dateTime', event['end'].get('date'))
         busy_times.append((datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE), datetime.datetime.fromisoformat(end).astimezone(TARGET_TIMEZONE)))
 
-    free_times = []
-    # 檢查五個時間區間是否有事件發生
-    time_ranges = [
-        (datetime.time(8, 0), datetime.time(10, 0)),
-        (datetime.time(10, 0), datetime.time(12, 0)),
-        (datetime.time(14, 0), datetime.time(16, 0)),
-        (datetime.time(16, 0), datetime.time(18, 0)),
-        (datetime.time(19, 0), datetime.time(21, 0))
+    free_time_list = [
+        {'time_slot': '08:00 - 09:59', 'free': True},
+        {'time_slot': '10:00 - 11:59', 'free': True},
+        {'time_slot': '14:00 - 15:59', 'free': True},
+        {'time_slot': '16:00 - 17:59', 'free': True},
+        {'time_slot': '19:00 - 20:59', 'free': True}
     ]
-    for time_range in time_ranges:
-        start_time = datetime.datetime.combine(start_of_day, time_range[0]).astimezone(TARGET_TIMEZONE)
-        end_time = datetime.datetime.combine(start_of_day, time_range[1]).astimezone(TARGET_TIMEZONE)
-        is_busy = False
-        for busy_time in busy_times:
-            if busy_time[0] < end_time and start_time < busy_time[1]:
-                is_busy = True
-                break
-        if not is_busy:
-            free_times.append((start_time, end_time))
-            
-    # 將空閒時間轉換成格式化字串
-    free_time_list = [f"{start.strftime('%H:%M')} - {end.strftime('%H:%M')}" for start, end in free_times]
+
+    for event in events:
+        start = event['start'].get('dateTime', event['start'].get('date'))
+        end = event['end'].get('dateTime', event['end'].get('date'))
+        start_time = datetime.datetime.fromisoformat(start).astimezone(TARGET_TIMEZONE).time()
+        end_time = datetime.datetime.fromisoformat(end).astimezone(TARGET_TIMEZONE).time()
+        for free_time in free_time_list:
+            if start_time <= datetime.datetime.strptime(free_time['time_slot'].split(' - ')[0], '%H:%M').time() and end_time >= datetime.datetime.strptime(free_time['time_slot'].split(' - ')[1], '%H:%M').time():
+                free_time['free'] = False
+
+    free_time_list = [free_time['time_slot'] for free_time in free_time_list if free_time['free']]
 
     return jsonify({'free_time': free_time_list})
 
