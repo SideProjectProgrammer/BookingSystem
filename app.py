@@ -55,7 +55,7 @@ def list_todays_events():
 ##        orderBy='startTime'
 ##    ).execute()
 
-    events_result = calendar_service.events().list(calendarId='CALENDAR_ID', timeMin=start_of_day, maxResults=10, singleEvents=True, orderBy='startTime').execute()
+    events_result = calendar_service.events().list(calendarId='primary', timeMin=start_of_day, maxResults=10, singleEvents=True, orderBy='startTime').execute()
 
     events = events_result.get('items', [])
     return jsonify({'events': events})
