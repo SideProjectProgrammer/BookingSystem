@@ -13,10 +13,10 @@ app = Flask(__name__)
 
 # 從環境變數中讀取 Google 相關變數
 SCOPES = ['https://www.googleapis.com/auth/calendar']
-CALENDAR_ID = os.environ['CALENDAR_ID']
-TIMEZONE = os.environ['TIMEZONE']
-##CALENDAR_ID = 'chang.yu.chao@gmail.com'
-##TIMEZONE = 'Asia/Taipei'
+##CALENDAR_ID = os.environ['CALENDAR_ID']
+##TIMEZONE = os.environ['TIMEZONE']
+CALENDAR_ID = 'chang.yu.chao@gmail.com'
+TIMEZONE = 'Asia/Taipei'
 
 # 設定 Service Account Credentials
 creds = None
@@ -88,7 +88,11 @@ def list_todays_events():
             cal_time.append(datetime.datetime.strptime(free_time['time_slot'].split(' - ')[0], '%H:%M').time().replace(tzinfo=TARGET_TIMEZONE).strftime(("%H:%M:%S")))
             cal_time.append(datetime.datetime.fromisoformat(end).astimezone(TARGET_TIMEZONE).time().strftime(("%H:%M:%S")))
             cal_time.append(datetime.datetime.strptime(free_time['time_slot'].split(' - ')[1], '%H:%M').time().replace(tzinfo=TARGET_TIMEZONE).strftime(("%H:%M:%S")))
-            if not (start_time < datetime.datetime.strptime(free_time['time_slot'].split(' - ')[0], '%H:%M').time().replace(tzinfo=TARGET_TIMEZONE) and end_time < datetime.datetime.strptime(free_time['time_slot'].split(' - ')[1], '%H:%M').time().replace(tzinfo=TARGET_TIMEZONE)) and not (start_time > datetime.datetime.strptime(free_time['time_slot'].split(' - ')[0], '%H:%M').time().replace(tzinfo=TARGET_TIMEZONE) and end_time > datetime.datetime.strptime(free_time['time_slot'].split(' - ')[1], '%H:%M').time().replace(tzinfo=TARGET_TIMEZONE)):
+            if (start_time < datetime.datetime.strptime(free_time['time_slot'].split(' - ')[0], '%H:%M').time().replace(tzinfo=TARGET_TIMEZONE) and end_time < datetime.datetime.strptime(free_time['time_slot'].split(' - ')[0], '%H:%M').time().replace(tzinfo=TARGET_TIMEZONE)):
+                cal_time.append("if")
+            elif (start_time > datetime.datetime.strptime(free_time['time_slot'].split(' - ')[1], '%H:%M').time().replace(tzinfo=TARGET_TIMEZONE) and end_time > datetime.datetime.strptime(free_time['time_slot'].split(' - ')[1], '%H:%M').time().replace(tzinfo=TARGET_TIMEZONE)):
+                cal_time.append("elif")
+            else:
                 free_time['free'] = False
             cal_time.append(free_time['free'])
             cal_time.append("===")
